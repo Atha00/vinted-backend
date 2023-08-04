@@ -16,7 +16,7 @@ cloudinary.config({
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect("mongodb://localhost:27017/vinted");
+mongoose.connect(process.env.MONGODB_URI);
 
 const User = require("./models/User");
 const Offer = require("./models/Offer");
