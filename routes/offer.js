@@ -60,5 +60,63 @@ router.post(
     }
   }
 );
+router.get("/offers", async (req, res) => {
+  try {
+    // console.log(req.query); // { title: 'robe', priceMax: '100' }
+
+    let limit = 5;
+
+    let page = 1;
+
+    if (req.query.page) {
+      page = req.query.page;
+    }
+
+    if (req.query.limit) {
+      limit = req.query.limit;
+    }
+
+    // soit vous mettez une valeur par défaut aux filtres, qui changera si l'un d'eux est reçu
+    // let priceMax = req.query.priceMax || 10000;
+
+    const filters = {};
+
+    if (req.query.title) {
+      filters.product_name = new RegExp(req.query.title, "i");
+    }
+
+    if (req.query.priceMax) {
+      filters.product_price = { $lte: req.query.priceMax };
+    }
+
+    if (req.query.priceMin) {
+      if (filters.product_price !== undefined) {
+        filters.product_price.$gte = req.query.priceMin;
+      } else {
+        filters.product_price = { $gte: req.query.priceMin };
+      }
+    }
+
+    const sortedObject = {};
+
+    if (req.query.sort === "price-desc") {
+      sortedObject.product_price = "desc";
+    } else {
+      sortedObject.product_price = "asc";
+    }
+
+    // const regex = new RegExp(req.query.title, "i");
+
+    const foundOffers = await Offer.find(filters)
+      .sort(sortedObject)
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .select("product_name product_price");
+
+    return res.status(200).json(foundOffers);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
 
 module.exports = router;
