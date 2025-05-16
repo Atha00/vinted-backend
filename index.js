@@ -4,9 +4,11 @@ const mongoose = require("mongoose");
 const fileUpload = require("express-fileupload");
 const cloudinary = require("cloudinary").v2;
 const convertToBase64 = require("./utils/convertB64");
-console.log(process.env);
+const cors = require("cors");
+// console.log(process.env);
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 mongoose.connect("mongodb://localhost:27017/vinted");
