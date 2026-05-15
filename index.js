@@ -1,12 +1,15 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const cloudinary = require("cloudinary").v2; // laissé l'import ici pour la config cloudinary
 mongoose.connect(process.env.MONGODB_URI);
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cors());
 
 // laissez la config cloudinary ici permet de l'avoir pour toute l'application :
 cloudinary.config({
@@ -33,6 +36,8 @@ app.all(/.*/, (req, res) => {
   return res.status(404).json("Not found");
 });
 
-app.listen(3000, () => {
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
   console.log("Server started 👖👕");
 });
